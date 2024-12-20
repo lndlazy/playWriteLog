@@ -2,6 +2,10 @@ package com.example.writelog;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -10,9 +14,11 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.speech.RecognitionService;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
@@ -22,6 +28,7 @@ import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.FileUtils;
 import com.elvishew.xlog.XLog;
+import com.example.writelog.service.MyJobService;
 import com.example.writelog.utils.WriteUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -35,7 +42,7 @@ import java.util.List;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class HomeActivity extends Activity {
-
+    private static final int JOB_ID = 1;
     private static final String TAG = "HomeActivity:";
     private Handler handler = new Handler(Looper.myLooper());
     private SourceView sourceView;
@@ -45,8 +52,9 @@ public class HomeActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+//
         // 设置全屏
+        Log.d(TAG, "      HomeActivity =======   onCreate: ");
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -59,6 +67,12 @@ public class HomeActivity extends Activity {
 //        RecognitionService
 
         sourceView = findViewById(R.id.sourceView);
+//        sourceView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(HomeActivity.this, MainActivity.class));
+//            }
+//        });
 //        handler.postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
@@ -80,7 +94,7 @@ public class HomeActivity extends Activity {
             sourceView.startPlay();
         }
 
-
+//        scheduleJob();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -226,11 +240,11 @@ public class HomeActivity extends Activity {
     }
 
 
-    String[] perms = {Manifest.permission.MANAGE_EXTERNAL_STORAGE ,Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE};
+    String[] perms = {Manifest.permission.MANAGE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.SYSTEM_ALERT_WINDOW};
 
     private static final int RC_CAMERA_PERM = 33;
 
-
+    private static final int OVERLAY_PERMISSION_REQUEST_CODE = 1;
     private void reqPermission() {
 
         XLog.d(TAG + "大于23？？" + (Build.VERSION.SDK_INT >= 23));
@@ -246,6 +260,18 @@ public class HomeActivity extends Activity {
             EasyPermissions.requestPermissions(this, getString(R.string.need_photo_permission),
                     RC_CAMERA_PERM, perms);
         }
+
+        if (!Settings.canDrawOverlays(this)) {
+            // 权限未授予，请求权限
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+            startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE);
+        }
+
+//        if (ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED) {
+//            Log.d(TAG, "没有  系统弹窗 权限");
+//            ActivityCompat.requestPermissions(this, perms, 0x02);
+//        } else
+//            Log.d(TAG, "有 系统弹窗 权限");
 
 //        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 //            File newFile = new File("/storage/emulated/0/test.txt");
