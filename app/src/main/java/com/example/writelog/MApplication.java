@@ -24,11 +24,21 @@ public class MApplication extends Application {
     private ExoDatabaseProvider provider;
     private SimpleCache simpleCache;
 
+    public static MApplication instance;
+
+
+    public static MApplication getInstance() {
+
+
+        return instance;
+    }
+
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-        initXLog(Environment.getExternalStorageDirectory().getAbsolutePath() + "/xlog");
+        instance = this;
+        initXLog(MApplication.getInstance().getExternalCacheDir() + "/xlog");
     }
 
     long cacheSize = 500 * 1024 * 1024;
@@ -52,7 +62,7 @@ public class MApplication extends Application {
 
         cacheEvictor = new LeastRecentlyUsedCacheEvictor(cacheSize);
         provider = new ExoDatabaseProvider(this);
-        simpleCache = new SimpleCache(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/exocache"), cacheEvictor, provider);
+        simpleCache = new SimpleCache(new File(MApplication.getInstance().getExternalCacheDir() + "/exocache"), cacheEvictor, provider);
 
     }
 

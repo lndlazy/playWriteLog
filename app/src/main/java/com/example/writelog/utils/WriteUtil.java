@@ -5,6 +5,8 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.example.writelog.MApplication;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +32,7 @@ public class WriteUtil {
                 return false;
             }
 
-            File sdCardFile = Environment.getExternalStorageDirectory();
+            File sdCardFile = MApplication.getInstance().getExternalCacheDir();
             File file = new File(sdCardFile, "writeData.txt");
 
             FileOutputStream fos = new FileOutputStream(file);
@@ -40,7 +42,7 @@ public class WriteUtil {
 
             fos.write(data.getBytes());
 
-            Log.e(TAG, "写入数据时间成功" + currentTime);
+            //Log.e(TAG, "写入数据时间成功" + currentTime);
             fos.flush();
             fos.close();
             return true;
@@ -57,12 +59,17 @@ public class WriteUtil {
             String state = Environment.getExternalStorageState();
 
             if (!Environment.MEDIA_MOUNTED.equals(state)) {
+                Log.d(TAG, "没有挂载sd卡");
                 // 已经挂载了sd卡
                 return false;
             }
 
-            File sdCardFile = Environment.getExternalStorageDirectory();
+            File sdCardFile = MApplication.getInstance().getExternalCacheDir();
             File file = new File(sdCardFile, "TimeData.txt");
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
 
             FileOutputStream fos = new FileOutputStream(file);
 
@@ -71,7 +78,7 @@ public class WriteUtil {
 
             fos.write(data.getBytes());
 
-//            Log.e(TAG, "写入time数据时间成功" + currentTime);
+            Log.e(TAG, "写入time数据时间成功" + currentTime);
             fos.flush();
             fos.close();
             return true;
@@ -93,7 +100,7 @@ public class WriteUtil {
                 return null;
             }
 
-            File sdCardFile = Environment.getExternalStorageDirectory();
+            File sdCardFile = MApplication.getInstance().getExternalCacheDir();
 
             File file = new File(sdCardFile, "data.txt");
 

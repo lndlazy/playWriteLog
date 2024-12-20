@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.speech.RecognitionService;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,12 +22,17 @@ import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.FileUtils;
 import com.elvishew.xlog.XLog;
+import com.example.writelog.utils.WriteUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class HomeActivity extends Activity {
 
@@ -73,6 +79,24 @@ public class HomeActivity extends Activity {
             sourceView.setSourceList(MyFileUtils.getImagesAndVideosFromFolder("/mnt/usb_storage/USB_DISK1" + SD_PATH));
             sourceView.startPlay();
         }
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (true) {
+                    try {
+                        SystemClock.sleep(1000);
+                        WriteUtil.saveTimeInfo();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }).start();
+
 
 //        String msg114 = "昼/夜";
 //        String s114 = chineseToASCII(msg114);
@@ -201,15 +225,62 @@ public class HomeActivity extends Activity {
         }
     }
 
-    String[] perms = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_PHONE_STATE};
+
+    String[] perms = {Manifest.permission.MANAGE_EXTERNAL_STORAGE ,Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE};
+
+    private static final int RC_CAMERA_PERM = 33;
+
 
     private void reqPermission() {
 
         XLog.d(TAG + "大于23？？" + (Build.VERSION.SDK_INT >= 23));
-        ActivityCompat.requestPermissions(this, perms, 0x02);
+        //ActivityCompat.requestPermissions(this, perms, 0x02);
+
+
+        //EasyPermissions.hasPermissions()
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            // 权限已授予，执行相关操作
+            //startCamera();
+        } else {
+            // 请求权限
+            EasyPermissions.requestPermissions(this, getString(R.string.need_photo_permission),
+                    RC_CAMERA_PERM, perms);
+        }
+
+//        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+//            File newFile = new File("/storage/emulated/0/test.txt");
+//            try {
+//                if (newFile.createNewFile()) {
+//                    // 文件创建成功
+//                    Log.d(TAG, "文件创建成功");
+//
+//                } else {
+//                    // 文件创建失败，可能是权限或其他原因
+//                    Log.d(TAG, "文件创建失败，可能是权限或其他原因");
+//
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        } else {
+//            // 存储设备不可用
+//            Log.d(TAG, "存储设备不可用");
+//        }
+
+
+//        //检查是否有读写权限
+//        if (ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//            Log.d(TAG, "没有读权限");
+//            ActivityCompat.requestPermissions(this, perms, 0x02);
+//        } else
+//            Log.d(TAG, "有读权限");
+//        if (ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//            Log.d(TAG, "没有写权限");
+//            ActivityCompat.requestPermissions(this, perms, 0x02);
+//        } else
+//            Log.d(TAG, "有写权限");
+
+
 //        if (Build.VERSION.SDK_INT >= 23) {// 6.0
 //
 //            boolean hasAll = true;

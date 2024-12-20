@@ -29,8 +29,8 @@ public class MyFileUtils {
     public static List<String> getAllExternalSdcardPath() {
         List<String> PathList = new ArrayList<String>();
 
-        String firstPath = Environment.getExternalStorageDirectory().getPath();
-         XLog.d(TAG +"getAllExternalSdcardPath , firstPath = " + firstPath);
+        String firstPath = MApplication.getInstance().getExternalCacheDir().getPath();
+        XLog.d(TAG + "getAllExternalSdcardPath , firstPath = " + firstPath);
 
         try {
             // 运行mount命令，获取命令的输出，得到系统中挂载的所有目录
@@ -74,29 +74,49 @@ public class MyFileUtils {
 
     // 获取指定目录下所有图片和视频文件的路径
     public static List<SourceBean> getImagesAndVideosFromFolder(String directoryPath) {
+
+        //directoryPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        //Log.d(TAG, "  mmmm           查找这个目录下的文件:" + directoryPath);
         List<SourceBean> mediaFiles = new ArrayList<>();
 
-        XLog.d(TAG + "查找这个目录下的文件:" + directoryPath);
+        //XLog.d(TAG + "查找这个目录下的文件:" + directoryPath);
 
-        List<File> files1 = FileUtils.listFilesInDir(directoryPath);
-         XLog.d(TAG +"目录下的文件个数:" + files1.size());
+        //List<File> files1 = FileUtils.listFilesInDir(directoryPath);
+//        File myFile = MApplication.getInstance().getExternalCacheDir();
+        File myFile = Environment.getExternalStorageDirectory();
+        List<File> files1 = new ArrayList<>();
+        if (myFile.exists() && myFile.isDirectory()) {
+            File[] files = myFile.listFiles();
+            if (files!= null) {
+                for (File file : files) {
+                    Log.d(TAG, "文件名称::" + file.getName());
+                    if (file.isFile()) {
+                        files1.add(file);
+                    }
+                }
+            }
+        }
+
+        XLog.d(TAG + "目录下的文件个数:" + files1.size());
         for (File file : files1) {
 
+//            if (file.isDirectory())
+//                continue;
 
-             XLog.d(TAG +"目录下的文件:" + file.getAbsolutePath() + "," + file.getName());
+            XLog.d(TAG + "目录下的文件:" + file.getAbsolutePath() + "," + file.getName());
             boolean isImageFile = isImageFile(file);
 
             if (isImageFile) {
                 SourceBean sourceBean = new SourceBean(0, file.getAbsolutePath(), 0);
                 mediaFiles.add(sourceBean);
-                 XLog.d(TAG +"是图片文件");
+                XLog.d(TAG + "是图片文件");
                 continue;
             }
 
             boolean isVideoFile = isVideoFile(file);
 
             if (isVideoFile) {
-                 XLog.d(TAG +"是视频文件");
+                XLog.d(TAG + "是视频文件");
                 SourceBean sourceBean = new SourceBean(1, file.getAbsolutePath(), 0);
                 mediaFiles.add(sourceBean);
 
