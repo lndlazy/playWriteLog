@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.writelog">
 
+    <uses-permission
+        android:name="android.permission.ACCESS_SURFACE_FLINGER"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -55,8 +58,6 @@
         <activity
             android:name=".HomeActivity"
             android:exported="true">
-
-
             <intent-filter>
 
                 <action android:name="com.home.OPEN_HOME_PAGE" />
@@ -66,6 +67,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name=".ui.LightDemoActivity"
+            android:exported="true">
+
+
+
 
         </activity>
 

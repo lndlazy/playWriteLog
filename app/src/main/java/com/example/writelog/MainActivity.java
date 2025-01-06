@@ -11,6 +11,8 @@ import android.os.Environment;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -69,6 +71,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
 
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return super.onTouchEvent(event);
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        Log.d(TAG, " onKeyDown  keyCode: " + keyCode + "  event: " + event.getAction() + "," + event.getKeyCode());
+
+
+//        return super.onKeyDown(keyCode, event);
+        return true;
     }
 
     @Override
@@ -342,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
         player.addListener(listener);
     }
 
-  String[] perms = {
+    String[] perms = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_PHONE_STATE};
@@ -387,11 +406,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 0x02) {
             // 检查是否有权限
 //            if (Environment.isExternalStorageManager()) {
-                Log.e(TAG, "授权成功??");
-                // 授权成功
+            Log.e(TAG, "授权成功??");
+            // 授权成功
 //                startJobScheduler();
 
-                getMediaSource();
+            getMediaSource();
 
 
 //            } else {
@@ -399,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //                // 授权失败
 //            }
-        }else {
+        } else {
             Log.d(TAG, "requestCode ?? " + requestCode);
         }
 

@@ -115,12 +115,12 @@ public class USBReceiver extends BroadcastReceiver {
 
     private synchronized void startHome(Context context) {
 
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        if (isActivityRunning(activityManager, HomeActivity.class.getName())) {
-            return;
-        }
-        Intent i = new Intent(MApplication.getInstance(), MyService.class);
-        context.startForegroundService(i);
+//        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+//        if (isActivityRunning(activityManager, HomeActivity.class.getName())) {
+//            return;
+//        }
+//        Intent i = new Intent(MApplication.getInstance(), MyService.class);
+//        context.startForegroundService(i);
 
     }
 
